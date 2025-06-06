@@ -70,9 +70,10 @@ export class CatsController {
    * Cập nhật thông tin mèo
    */
   @Put(':id')
-  update(@Param('id') id: string, @Body() updateCatDto: UpdateCatDto): string {
-    return `This action updates a #${id} cat`;
-  }
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCatDto: UpdateCatDto): string {
+  return `This action updates a #${id} cat`;
+}
+
   /**
    * GET /cats/response
    * Dùng @Res để response manual
@@ -99,15 +100,15 @@ export class CatsController {
   }
   @Get()
   async findAll():Promise<Cat[]>{
-    return this.catsService.findALL();
+    return this.catsService.findAll();
   }
   /**
    * DELETE /cats/:id
    * Xóa một con mèo theo ID
    */
   @Delete(':id')
-  remove_a_cat(@Param('id',ParseIntPipe)id:number):Cat[]{
-    return this.catsService.remove_a_cat(id);
+  remove_cat(@Param('id',ParseIntPipe)id:number):Cat[]{
+    return this.catsService.removeCat(id);
   }
   
 }
