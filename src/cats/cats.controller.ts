@@ -11,7 +11,8 @@ import {
   HttpStatus,
   Redirect,
   HttpCode,
-  Bind,ParseIntPipe
+  Bind,
+  ParseIntPipe,
 } from '@nestjs/common';
 import { Response } from 'express';
 import { CreateCatDto, UpdateCatDto } from './dto';
@@ -19,7 +20,7 @@ import { CatsService } from './cats.service';
 import { Cat } from './interfaces/cat.interface';
 @Controller('cats')
 export class CatsController {
-  constructor(private catsService:CatsService){}
+  constructor(private catsService: CatsService) {}
   /**
    * POST /cats
    * Tạo mới một con mèo.
@@ -52,27 +53,31 @@ export class CatsController {
     }
   }
 
-  
   @Get('hello')
   getHello(): string {
-  return 'Hello Chuong Nguyen!';
+    return 'Hello Chuong Nguyen!';
   }
   /**
    * GET /cats/:id
    * Lấy chi tiết một con mèo theo ID
    */
   @Get(':id')
-  async findOne(@Param('id',ParseIntPipe)id:number): Promise<Cat | undefined> {
-  return this.catsService.findOne(id);
-}
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<Cat | undefined> {
+    return this.catsService.findOne(id);
+  }
   /**
    * PUT /cats/:id
    * Cập nhật thông tin mèo
    */
   @Put(':id')
-  update(@Param('id', ParseIntPipe) id: number, @Body() updateCatDto: UpdateCatDto): string {
-  return `This action updates a #${id} cat`;
-}
+  update(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateCatDto: UpdateCatDto,
+  ): string {
+    return `This action updates a #${id} cat`;
+  }
 
   /**
    * GET /cats/response
@@ -94,12 +99,12 @@ export class CatsController {
   }
 
   @Post()
-  async create(@Body() createCatDto:CreateCatDto){
-    const result=this.catsService.create(createCatDto);
+  async create(@Body() createCatDto: CreateCatDto) {
+    const result = this.catsService.create(createCatDto);
     return { message: 'Cat created successfully', data: result };
   }
   @Get()
-  async findAll():Promise<Cat[]>{
+  async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
   }
   /**
@@ -107,8 +112,7 @@ export class CatsController {
    * Xóa một con mèo theo ID
    */
   @Delete(':id')
-  remove_cat(@Param('id',ParseIntPipe)id:number):Cat[]{
+  remove_cat(@Param('id', ParseIntPipe) id: number): Cat[] {
     return this.catsService.removeCat(id);
   }
-  
 }

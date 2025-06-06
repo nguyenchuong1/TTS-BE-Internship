@@ -1,5 +1,5 @@
-export class CreateCatDto {
-  id:number;
+export interface Cat {
+  id: number;
   name: string;
   age: number;
   breed: string;
