@@ -14,10 +14,10 @@ export class CatsService{
   findOne(id: number): Cat | undefined {
   return this.cats.find(cat => cat.id  === id);
   }
-  findALL():Cat[]{
+  findAll():Cat[]{
     return this.cats
   }
-  remove_a_cat(id: number):Cat[] {
+  removeCat(id: number):Cat[] {
     const index = this.cats.findIndex(cat => cat.id === id);
 
     if (index === -1) {
