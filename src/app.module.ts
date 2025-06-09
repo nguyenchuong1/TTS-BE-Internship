@@ -11,7 +11,7 @@ import { AuthController } from './auths/auth.controller';
 import { AuthService } from './auths/auth.service';
 
 @Module({
-  imports: [AppModule,CatsModule,UsersModule,AuthModule],
+  imports: [CatsModule,UsersModule,AuthModule],
   controllers: [CatsController,AuthController],
   providers: [CatsService,AuthService],
 })
