@@ -14,105 +14,61 @@ import {
   Bind,
   ParseIntPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
 import { Response } from 'express';
 import { CreateCatDto, UpdateCatDto } from './dto';
 import { CatsService } from './cats.service';
-import { Cat } from './interfaces/cat.interface';
+// import { Cat } from './interfaces/cat.interface';
+import { Cat } from './common/entities/cat.entity';
+import { Public } from 'src/auths/decorator/auth.decorator';
+@ApiBearerAuth()
+@ApiTags('cats')
 @Controller('cats')
 export class CatsController {
   constructor(private catsService: CatsService) {}
-  /**
-   * POST /cats
-   * Tạo mới một con mèo.
-   */
-  // @Post()
-  // @HttpCode(201)
-  // create(@Body() createCatDto: CreateCatDto): string {
-  //   // Logic thêm mèo ở đây
-  //   return 'This action adds a new cat';
-  // }
 
-  /**
-   * GET /cats
-   * Trả về danh sách mèo
-   */
-  // @Get()
-  // findAll(): string[] {
-  //   return ['Meo meo 1', 'Meo meo 2'];
-  // }
-
-  /**
-   * GET /cats/docs?version=5
-   * Redirect tới trang tài liệu
-   */
-  @Get('docs')
-  @Redirect('https://docs.nestjs.com', 302)
-  getDocs(@Query('version') version: string) {
-    if (version === '5') {
-      return { url: 'https://docs.nestjs.com/v5/' };
-    }
-  }
-
+  @Public()
   @Get('hello')
+  @ApiOperation({ summary: 'Test endpoint' })
   getHello(): string {
-    return 'Hello Chuong Nguyen!';
+    return this.catsService.getHello();
   }
-  /**
-   * GET /cats/:id
-   * Lấy chi tiết một con mèo theo ID
-   */
+  @Public()
   @Get(':id')
-  async findOne(
-    @Param('id', ParseIntPipe) id: number,
-  ): Promise<Cat | undefined> {
+  @ApiOperation({ summary: 'Find a cat by ID' })
+  @ApiResponse({ status: 200, description: 'The found record', type: Cat })
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Cat | undefined> {
     return this.catsService.findOne(id);
   }
-  /**
-   * PUT /cats/:id
-   * Cập nhật thông tin mèo
-   */
+  @Public()
   @Put(':id')
-  update(
-    @Param('id', ParseIntPipe) id: number,
-    @Body() updateCatDto: UpdateCatDto,
-  ): string {
+  @ApiOperation({ summary: 'Update a cat by ID' })
+  @ApiBody({ type: UpdateCatDto })
+  @ApiResponse({ status: 200, description: 'Cat updated' })
+  update(@Param('id', ParseIntPipe) id: number, @Body() updateCatDto: UpdateCatDto): string {
     return `This action updates a #${id} cat`;
   }
-
-  /**
-   * GET /cats/response
-   * Dùng @Res để response manual
-   */
-  @Get('response')
-  sendResponse(@Res() res: Response) {
-    res.status(HttpStatus.OK).json({ message: 'Manual response using @Res' });
-  }
-
-  /**
-   * GET /cats/with-status
-   * Dùng passthrough để không bị mất tính năng tự động của NestJS
-   */
-  @Get('with-status')
-  getWithPassthrough(@Res({ passthrough: true }) res: Response) {
-    res.status(HttpStatus.OK);
-    return ['This uses passthrough correctly'];
-  }
-
+  @Public()
   @Post()
+  @ApiOperation({ summary: 'Create a new cat' })
+  @ApiBody({ type: CreateCatDto })
+  @ApiResponse({ status: 201, description: 'Cat created successfully', type: CreateCatDto })
   async create(@Body() createCatDto: CreateCatDto) {
     const result = this.catsService.create(createCatDto);
     return { message: 'Cat created successfully', data: result };
   }
+  @Public()
   @Get()
+  @ApiOperation({ summary: 'List all cats' })
+  @ApiResponse({ status: 200, description: 'List of cats', type: [CreateCatDto] })
   async findAll(): Promise<Cat[]> {
     return this.catsService.findAll();
   }
-  /**
-   * DELETE /cats/:id
-   * Xóa một con mèo theo ID
-   */
+  @Public()
   @Delete(':id')
-  remove_cat(@Param('id', ParseIntPipe) id: number): Cat[] {
+  @ApiOperation({ summary: 'Delete a cat by ID' })
+  @ApiResponse({ status: 200, description: 'Cat deleted' })
+  removeCat(@Param('id', ParseIntPipe) id: number): Cat[] {
     return this.catsService.removeCat(id);
   }
 }
