@@ -36,7 +36,7 @@ export class CatsController {
   @Public()
   @Get(':id')
   @ApiOperation({ summary: 'Find a cat by ID' })
-  @ApiResponse({ status: 200, description: 'The found record', type: CreateCatDto })
+  @ApiResponse({ status: 200, description: 'The found record', type: Cat })
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Cat | undefined> {
     return this.catsService.findOne(id);
   }
@@ -68,7 +68,7 @@ export class CatsController {
   @Delete(':id')
   @ApiOperation({ summary: 'Delete a cat by ID' })
   @ApiResponse({ status: 200, description: 'Cat deleted' })
-  remove_cat(@Param('id', ParseIntPipe) id: number): Cat[] {
+  removeCat(@Param('id', ParseIntPipe) id: number): Cat[] {
     return this.catsService.removeCat(id);
   }
 }
