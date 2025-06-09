@@ -12,8 +12,8 @@ import { Public } from './decorator/auth.decorator';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 
-@ApiTags('Auth') // Nhóm "Auth" trong Swagger UI
-@Controller('auth')
+@ApiTags('auths') // Nhóm "Auth" trong Swagger UI
+@Controller('auths')
 export class AuthController {
   constructor(private authService: AuthService) {}
   @Public()
