@@ -11,7 +11,7 @@ import { AuthService } from './auth.service';
 import { Public } from './decorator/auth.decorator';
 import { CreateUserDto } from 'src/users/dto/create-user.dto';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-
+import { SignInDto } from './dto/auth.signInDto ';
 @ApiTags('auths') // Nhóm "Auth" trong Swagger UI
 @Controller('auths')
 export class AuthController {
@@ -38,9 +38,9 @@ export class AuthController {
   })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  signIn(@Body() signInDto: Record<string, any>) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
-  }
+  signIn(@Body() signInDto: SignInDto) {
+  return this.authService.signIn(signInDto.username, signInDto.password);
+ }
 
   @Public()
   @Post('signup')
