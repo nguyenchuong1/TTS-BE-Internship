@@ -5,6 +5,7 @@ import { CatsModule } from './cats/cats.module';
 import { AuthModule } from './auths/auth.module';
 import { UsersModule } from './users/users.module';
 import { Cat } from './cats/common/entities/cat.entity';
+import { User } from './users/entities/user.entity';
 
 @Module({
   imports: [
@@ -17,7 +18,8 @@ import { Cat } from './cats/common/entities/cat.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'test',
-      entities: [Cat],
+      entities: [__dirname + '/**/*.entity{.ts,.js}'],
+
       synchronize: true,
     }),
 

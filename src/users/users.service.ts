@@ -1,38 +1,29 @@
-import { Injectable } from '@nestjs/common';
-
+import { Injectable,InternalServerErrorException } from '@nestjs/common';
+import {InjectRepository} from '@nestjs/typeorm';
+import {Repository} from 'typeorm';
+import { CreateUserDto } from './dto/create-user.dto';
+import { User } from './entities/user.entity';
 // This should be a real class/interface representing a user entity
-export type User = any;
 
 @Injectable()
 export class UsersService {
-  private readonly users = [
-    {
-      userId: 1,
-      username: 'john',
-      password: 'changeme',
-    },
-    {
-      userId: 2,
-      username: 'maria',
-      password: 'guess',
-    },
-    {
-      userId: 3,
-      username: 'admin',
-      password: 'admin',
-    },
-  ];
-  
-
-  async create(userData: Partial<User>): Promise<User> {
-    const user = {
-      id: this.users.length + 1,
-      ...userData,
-    } as User;
-    this.users.push(user);
-    return user;
+  constructor(
+    @InjectRepository(User) 
+    private readonly usersRepository:Repository<User>
+  ){}
+  getHello(): string {
+    return 'Mấy con mèo chào mọi người !';
   }
-  async findOne(username: string): Promise<User | undefined> {
-    return this.users.find(user => user.username === username);
+  async create(createUserDto:CreateUserDto):Promise<User> {
+    try{
+      const user = this.usersRepository.create(createUserDto);
+      return await this.usersRepository.save(user);
+    }catch(error){
+       console.error('Lỗi khi tạo user:', error);
+          throw new InternalServerErrorException('Lỗi tạo user');
+    }
   }
+  async findOne(username:string ): Promise<User|null> {
+      return  await this.usersRepository.findOne({ where:{ username} });
+    }
 }
