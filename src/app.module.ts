@@ -6,6 +6,7 @@ import { AuthModule } from './auths/auth.module';
 import { UsersModule } from './users/users.module';
 import { Cat } from './cats/common/entities/cat.entity';
 import { User } from './users/entities/user.entity';
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -19,6 +20,7 @@ import { User } from './users/entities/user.entity';
       database: 'test',
       // entities: [Cat,User],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
+
       synchronize: true,
     }),
 
