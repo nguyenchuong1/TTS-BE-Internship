@@ -17,9 +17,9 @@ export class User {
 
   @Column({ nullable: true }) // Cho phép null nếu không bắt buộc
   @ApiProperty({ example: 'John', description: 'First name of the user' })
-  first_name: string;
+  firstName: string;
 
   @Column({ nullable: true })
   @ApiProperty({ example: 'Doe', description: 'Last name of the user' })
-  last_name: string;
+  lastName: string;
 }

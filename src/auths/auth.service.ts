@@ -38,7 +38,8 @@ export class AuthService {
         access_token: await this.jwtService.signAsync(payload),
       };
     } catch (error) {
-      throw error;
+      console.error('[SignIn Error]', error);
+      throw new UnauthorizedException('Login failed');
     }
   }
 

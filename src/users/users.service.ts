@@ -19,8 +19,8 @@ export class UsersService {
       const user = this.usersRepository.create(createUserDto);
       return await this.usersRepository.save(user);
     }catch(error){
-      console.error('Lỗi khi tạo cat:', error);
-          throw new InternalServerErrorException('Lỗi tạo cat');
+       console.error('Lỗi khi tạo user:', error);
+          throw new InternalServerErrorException('Lỗi tạo user');
     }
   }
   async findOne(username:string ): Promise<User|null> {

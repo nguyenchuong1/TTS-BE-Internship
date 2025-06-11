@@ -11,14 +11,15 @@ export class CreateUserDto {
   })
   password: string;
   @ApiProperty({
-    example: 'John',
-    description: 'First name of the user',
+  example: 'John',
+  description: 'First name of the user',
+  required: false,
   })
-  first_name: string;
+  firstName?: string;
   @ApiProperty({
     example: 'Doe',
     description: 'Last name of the user',
   })
-  last_name: string;
+  lastName: string;
   
 }

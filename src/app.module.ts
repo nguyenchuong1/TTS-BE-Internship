@@ -18,7 +18,6 @@ import { User } from './users/entities/user.entity';
       username: 'postgres',
       password: 'postgres',
       database: 'test',
-      // entities: [Cat,User],
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
 
       synchronize: true,
