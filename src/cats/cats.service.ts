@@ -1,68 +1,47 @@
-import { Injectable, Optional, Inject, NotFoundException } from '@nestjs/common';
-// import {Cat} from './interfaces/cat.interface';
+import { Injectable, Optional, Inject, NotFoundException ,InternalServerErrorException} from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import {Repository} from 'typeorm' 
+import { CreateCatDto } from './dto/create-cat.dto';
+import { UpdateCatDto } from './dto/update-cat.dto';
 import { Cat } from './common/entities/cat.entity';
+
 @Injectable()
 export class CatsService {
-  private readonly cats: Cat[] = [
-    {
-      id: 0,
-      name: 'Tom',
-      age: 3,
-      breed: 'British Shorthair',
-    },
-    {
-      id: 1,
-      name: 'Jerry',
-      age: 2,
-      breed: 'Siamese',
-    },
-    {
-      id: 2,
-      name: 'Milo',
-      age: 1,
-      breed: 'Persian',
-    },
-    {
-      id: 3,
-      name: 'Luna',
-      age: 4,
-      breed: 'Bengal',
-    },
-    {
-      id: 4,
-      name: 'Leo',
-      age: 5,
-      breed: 'Maine Coon',
-    },
-  ];
+  constructor(
+    @InjectRepository(Cat)
+    private readonly catsRepository: Repository<Cat>,
+  ) {}
+ 
 
   getHello(): string {
     return 'Mấy con mèo chào mọi người !';
   }
 
-  create(cat: Cat) {
-    this.cats.push(cat);
-    return cat;
+  async findAll(): Promise< Cat[]> {
+    return await this.catsRepository.find();
   }
 
-  findOne(id: number): Cat | undefined {
-    return this.cats.find((cat) => cat.id === id);
+  async findOne(id: number): Promise<Cat|null> {
+    return  await this.catsRepository.findOne({ where:{ id} });
   }
 
-  findAll(): Cat[] {
-    return this.cats;
+  async create(createCatDto: CreateCatDto): Promise<Cat> {
+  try {
+    const cat = this.catsRepository.create(createCatDto);
+    return await this.catsRepository.save(cat);
+  } catch (error) {
+    console.error('Lỗi khi tạo cat:', error);
+    throw new InternalServerErrorException('Lỗi tạo cat');
   }
+}
 
-  removeCat(id: number): Cat[] {
-    const index = this.cats.findIndex((cat) => cat.id === id);
+  async update(id: number, updateCatDto: UpdateCatDto): Promise<Cat | null> {
+  await this.catsRepository.update(id, updateCatDto);
+  return await this.catsRepository.findOne({ where: { id } });
+ }
 
-    if (index === -1) {
-      throw new NotFoundException(`Cat with id ${id} not found`);
-    }
-    console.log(this.cats);
-    console.log('ID cần xoá:', id);
-    this.cats.splice(index, 1);
-    return this.cats;
+  async delete(id: number): Promise<void> {
+     await this.catsRepository.delete(id);
   }
 }
 // export class HttpService<T> {
