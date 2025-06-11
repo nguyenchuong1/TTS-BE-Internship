@@ -1,22 +1,18 @@
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateCatDto {
   @ApiProperty({
-    type: Number,
-  })
-  id: number;
-
-  @ApiProperty({
-    type: String,
+    example: 'Mèo Cỏ',
+    description: 'The name of the cat',
   })
   name: string;
-
   @ApiProperty({
-    type: Number,
+    example: 55,
+    description: 'The age of the Cat',
   })
   age: number;
-
   @ApiProperty({
-    type: String,
+    example: 'Maine Coon',
+    description: 'The breed of the Cat',
   })
   breed: string;
 }
