@@ -18,7 +18,7 @@ export class TodosService {
       return await this.todosRepository.save(todo);
     } catch (error) {
       console.error('Error when create Todolist:', error);
-      throw new InternalServerErrorException('Error create Todolist');
+      throw new InternalServerErrorException('Failed to create Todo');
     }
   }
 
@@ -30,8 +30,8 @@ export class TodosService {
     return await this.todosRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateTodotDto: UpdateTodoDto): Promise<Todo | null> {
-    await this.todosRepository.update(id, updateTodotDto);
+  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<Todo | null> {
+    await this.todosRepository.update(id, updateTodoDto);
     return await this.todosRepository.findOne({ where: { id } });
   }
 
