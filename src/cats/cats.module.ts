@@ -11,4 +11,3 @@ import { Cat } from './common/entities/cat.entity';
   exports: [CatsService],
 })
 export class CatsModule {}
-
