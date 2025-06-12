@@ -1,17 +1,11 @@
-import {
-  Body,
-  Controller,
-  Get,
-  HttpCode,
-  HttpStatus,
-  Post,
-  Request,
-} from '@nestjs/common';
+import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { CreateUserDto } from 'src/users/dto/create-user.dto';
+import { User } from 'src/users/entities/user.entity';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/auth.decorator';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { SignInDto } from './dto/auth.signInDto';
+
 @ApiTags('auths') // Nhóm "Auth" trong Swagger UI
 @Controller('auths')
 export class AuthController {
@@ -39,8 +33,8 @@ export class AuthController {
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
   signIn(@Body() signInDto: SignInDto) {
-  return this.authService.signIn(signInDto.username, signInDto.password);
- }
+    return this.authService.signIn(signInDto.username, signInDto.password);
+  }
 
   @Public()
   @Post('signup')
@@ -55,6 +49,6 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user profile (requires JWT)' })
   getProfile(@Request() req) {
-    return req.user;
+    return req.user as User;
   }
 }

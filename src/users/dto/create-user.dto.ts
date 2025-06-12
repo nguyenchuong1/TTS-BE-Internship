@@ -11,9 +11,9 @@ export class CreateUserDto {
   })
   password: string;
   @ApiProperty({
-  example: 'John',
-  description: 'First name of the user',
-  required: false,
+    example: 'John',
+    description: 'First name of the user',
+    required: false,
   })
   firstName?: string;
   @ApiProperty({
@@ -21,5 +21,4 @@ export class CreateUserDto {
     description: 'Last name of the user',
   })
   lastName: string;
-  
 }
