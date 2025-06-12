@@ -23,20 +23,4 @@ export class CreateTodoDto {
   @IsOptional()
   @IsBoolean()
   isCompleted?: boolean;
-
-  @ApiProperty({
-    example: '2025-06-11T12:34:56.789Z',
-    description: 'Creation timestamp',
-    required: false,
-  })
-  @IsOptional()
-  createdAt?: Date;
-
-  @ApiProperty({
-    example: '2025-06-11T13:00:00.000Z',
-    description: 'Last update timestamp',
-    required: false,
-  })
-  @IsOptional()
-  updatedAt?: Date;
 }

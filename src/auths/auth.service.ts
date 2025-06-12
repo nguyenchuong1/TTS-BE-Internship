@@ -33,10 +33,10 @@ export class AuthService {
       }
 
       const payload = {
+        sub: user.id,
         username: user.username,
-        id: user.id,
-        first_name: user.firstName,
-        last_name: user.lastName,
+        firstName: user.firstName,
+        lastName: user.lastName,
       };
       return {
         message: 'Sign in successful',
