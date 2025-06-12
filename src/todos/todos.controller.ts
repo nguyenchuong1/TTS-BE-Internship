@@ -20,7 +20,7 @@ export class TodosController {
 
   @Public()
   @Post()
-  @ApiOperation({ summary: 'Create a new todolist' })
+  @ApiResponse({ status: 200, description: 'List All in todoApp', type: [Todo] })
   @ApiBody({ type: CreateTodoDto })
   create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
     return this.todosService.create(createTodoDto);
