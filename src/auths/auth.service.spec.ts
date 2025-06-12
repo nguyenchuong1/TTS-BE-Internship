@@ -1,9 +1,8 @@
-import { Test, TestingModule } from '@nestjs/testing';
-import { AuthService } from './auth.service';
-import { UsersService } from '../users/users.service';
-import { JwtService } from '@nestjs/jwt';
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
-import * as bcrypt from 'bcrypt';
+import { JwtService } from '@nestjs/jwt';
+import { Test, TestingModule } from '@nestjs/testing';
+import { UsersService } from '../users/users.service';
+import { AuthService } from './auth.service';
 
 describe('AuthService', () => {
   let service: AuthService;
@@ -66,14 +65,14 @@ describe('AuthService', () => {
   describe('signup', () => {
     it('should sign up a new user', async () => {
       (usersService.findOne as jest.Mock).mockResolvedValue(null);
-      (usersService.create as jest.Mock).mockImplementation(async (data) => ({
+      (usersService.create as jest.Mock).mockImplementation((data) => ({
         id: 1,
         username: data.username,
         password: data.password,
       }));
       (jwtService.sign as jest.Mock).mockReturnValue('signed_token');
 
-      const dto = { username: 'john', password: 'changeme' };
+      const dto = { username: 'john', password: 'changeme', lastName: '' };
       const result = await service.signup(dto);
 
       expect(result).toEqual({
@@ -85,8 +84,9 @@ describe('AuthService', () => {
     it('should throw ConflictException if user already exists', async () => {
       (usersService.findOne as jest.Mock).mockResolvedValue({ username: 'john' });
 
-      await expect(service.signup({ username: 'john', password: 'changeme' }))
-        .rejects.toThrow(ConflictException);
+      await expect(
+        service.signup({ username: 'john', password: 'changeme', lastName: '' }),
+      ).rejects.toThrow(ConflictException);
     });
   });
 });

@@ -1,7 +1,8 @@
 import { NestFactory } from '@nestjs/core';
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 import { HttpExceptionFilter } from './cats/common/exception_filter/http-exception.filter';
-import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
+
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.useGlobalFilters(new HttpExceptionFilter());
@@ -16,4 +17,5 @@ async function bootstrap() {
   await app.listen(3000);
   console.log(`Application is running on: http://localhost:3000`);
 }
-bootstrap();
+
+void bootstrap();

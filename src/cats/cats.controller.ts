@@ -1,29 +1,11 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Put,
-  Delete,
-  Param,
-  Body,
-  Query,
-  Res,
-  HttpStatus,
-  Redirect,
-  HttpCode,
-  Bind,
-  ParseIntPipe,
-  NotAcceptableException,
-  NotFoundException,
-} from '@nestjs/common';
-import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags, ApiBody } from '@nestjs/swagger';
-import { Response } from 'express';
+import { Body, Controller, Delete, Get, NotFoundException, Param, Post, Put } from '@nestjs/common';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/auths/decorator/auth.decorator';
+import { CatsService } from './cats.service';
+import { Cat } from './common/entities/cat.entity';
 import { CreateCatDto } from './dto/create-cat.dto';
 import { UpdateCatDto } from './dto/update-cat.dto';
-import { CatsService } from './cats.service';
-// import { Cat } from './interfaces/cat.interface';
-import { Cat } from './common/entities/cat.entity';
-import { Public } from 'src/auths/decorator/auth.decorator';
+
 @ApiBearerAuth()
 @ApiTags('cats')
 @Controller('cats')
@@ -42,10 +24,10 @@ export class CatsController {
   @ApiOperation({ summary: 'Find a cat by ID' })
   @ApiResponse({ status: 200, description: 'The found record', type: Cat })
   async findOne(@Param('id') id: number): Promise<Cat> {
-    const cat= await this.catsService.findOne(id);
-    if(!cat){
+    const cat = await this.catsService.findOne(id);
+    if (!cat) {
       throw new Error('Cat not found!');
-    }else{
+    } else {
       return cat;
     }
   }
@@ -55,12 +37,11 @@ export class CatsController {
   @ApiOperation({ summary: 'Update a cat by ID' })
   @ApiBody({ type: UpdateCatDto })
   @ApiResponse({ status: 200, description: 'Cat updated' })
-  async update(
-  @Param('id') id: number,@Body() updatecat: UpdateCatDto,): Promise<Cat|null> {
+  async update(@Param('id') id: number, @Body() updatecat: UpdateCatDto): Promise<Cat | null> {
     const cat = await this.catsService.update(id, updatecat);
-    if(!cat){
+    if (!cat) {
       throw new NotFoundException(`Cat with id ${id} not found!`);
-    }else{
+    } else {
       return cat;
     }
   }
@@ -87,10 +68,10 @@ export class CatsController {
   @ApiOperation({ summary: 'Delete a cat by ID' })
   @ApiResponse({ status: 200, description: 'Cat deleted' })
   async remove(@Param('id') id: number): Promise<void> {
-    const cat= await this.catsService.findOne(id);
-    if(!cat){
+    const cat = await this.catsService.findOne(id);
+    if (!cat) {
       throw new Error('Cat not found!');
-    }else{
+    } else {
       return await this.catsService.delete(id);
     }
   }
