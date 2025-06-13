@@ -41,7 +41,7 @@ export class TodosController {
   async findOne(@Param('id') id: number): Promise<Todo> {
     const todo = await this.todosService.findOne(id);
     if (!todo) {
-      throw new Error('Không tìm thấy trong danh sách!');
+      throw new NotFoundException('Todo not found in the list!');
     } else {
       return todo;
     }
