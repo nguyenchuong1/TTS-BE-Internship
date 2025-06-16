@@ -39,7 +39,7 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
       };
-
+      
       return {
         message: 'Sign in successful',
         access_token: await this.jwtService.signAsync(payload),

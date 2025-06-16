@@ -1,4 +1,6 @@
 version: '3.9'
+name: nestjs-app
+
 services:
   postgres:
     image: postgres:latest
