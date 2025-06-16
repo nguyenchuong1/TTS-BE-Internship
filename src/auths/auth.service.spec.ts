@@ -1,13 +1,17 @@
 import { ConflictException, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { Test, TestingModule } from '@nestjs/testing';
-import { UsersService } from '../users/users.service';
 import { AuthService } from './auth.service';
+import { UsersService } from '../users/users.service';
+import { Role } from '../roles/role.enum';
+import * as bcrypt from 'bcrypt';
+
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;
-  let usersService: Partial<UsersService>;
-  let jwtService: Partial<JwtService>;
+  let usersService: Partial<Record<keyof UsersService, jest.Mock>>;
+  let jwtService: Partial<Record<keyof JwtService, jest.Mock>>;
 
   beforeEach(async () => {
     usersService = {
@@ -37,55 +41,97 @@ describe('AuthService', () => {
 
   describe('signIn', () => {
     it('should sign in with valid credentials', async () => {
-      const user = { userId: 1, username: 'john', password: 'changeme' };
-      (usersService.findOne as jest.Mock).mockResolvedValue(user);
-      (jwtService.signAsync as jest.Mock).mockResolvedValue('token123');
+      const mockUser = {
+        id: 3,
+        username: 'chuong',
+        password: 'chuong',
+        firstName: 'chuong',
+        lastName: 'chuong',
+        role: Role.Admin,
+      };
 
-      const result = await service.signIn('john', 'changeme');
+      usersService.findOne?.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(true);
+      jwtService.signAsync?.mockResolvedValue('token123');
+
+      const result = await service.signIn('chuong', 'chuong');
+
       expect(result).toEqual({
         message: 'Sign in successful',
         access_token: 'token123',
       });
+      expect(usersService.findOne).toHaveBeenCalledWith('chuong');
+      expect(jwtService.signAsync).toHaveBeenCalledWith({
+        sub: mockUser.id,
+        username: mockUser.username,
+        firstName: mockUser.firstName,
+        lastName: mockUser.lastName,
+        role: mockUser.role,
+      });
     });
 
     it('should throw UnauthorizedException if password is incorrect', async () => {
-      const user = { userId: 1, username: 'john', password: 'wrongpass' };
-      (usersService.findOne as jest.Mock).mockResolvedValue(user);
+      const mockUser = {
+        id: 2,
+        username: 'admin',
+        password: 'hashed_password',
+      };
 
-      await expect(service.signIn('john', 'changeme')).rejects.toThrow(UnauthorizedException);
+      usersService.findOne?.mockResolvedValue(mockUser);
+      (bcrypt.compare as jest.Mock).mockResolvedValue(false);
+
+      await expect(service.signIn('admin', 'wrong')).rejects.toThrow(UnauthorizedException);
     });
 
     it('should throw UnauthorizedException if user not found', async () => {
-      (usersService.findOne as jest.Mock).mockResolvedValue(null);
-
+      usersService.findOne?.mockResolvedValue(null);
       await expect(service.signIn('john', 'changeme')).rejects.toThrow(UnauthorizedException);
     });
   });
 
   describe('signup', () => {
     it('should sign up a new user', async () => {
-      (usersService.findOne as jest.Mock).mockResolvedValue(null);
-      (usersService.create as jest.Mock).mockImplementation((data) => ({
-        id: 1,
-        username: data.username,
-        password: data.password,
-      }));
-      (jwtService.sign as jest.Mock).mockReturnValue('signed_token');
+      const dto = {
+        username: 'hello',
+        password: 'plain_password',
+        firstName: 'Ngáo',
+        lastName: 'Khùng',
+        role: Role.User,
+      };
 
-      const dto = { username: 'john', password: 'changeme', lastName: '' };
+      usersService.findOne?.mockResolvedValue(null);
+      (bcrypt.hash as jest.Mock).mockResolvedValue('hashed_password');
+      usersService.create?.mockResolvedValue({
+        id: 1,
+        ...dto,
+        password: 'hashed_password',
+      });
+      jwtService.sign?.mockReturnValue('signed_token');
+
       const result = await service.signup(dto);
 
       expect(result).toEqual({
         message: 'Sign up successful',
         access_token: 'signed_token',
       });
+      expect(usersService.findOne).toHaveBeenCalledWith('hello');
+      expect(usersService.create).toHaveBeenCalledWith({
+        ...dto,
+        password: 'hashed_password',
+      });
     });
 
     it('should throw ConflictException if user already exists', async () => {
-      (usersService.findOne as jest.Mock).mockResolvedValue({ username: 'john' });
+      usersService.findOne?.mockResolvedValue({ username: 'chuong' });
 
       await expect(
-        service.signup({ username: 'john', password: 'changeme', lastName: '' }),
+        service.signup({
+          username: 'chuong',
+          password: 'chuong',
+          firstName: 'chuong',
+          lastName: 'chuong',
+          role: Role.User,
+        }),
       ).rejects.toThrow(ConflictException);
     });
   });

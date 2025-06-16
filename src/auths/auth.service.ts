@@ -37,6 +37,7 @@ export class AuthService {
         username: user.username,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
       };
       return {
         message: 'Sign in successful',

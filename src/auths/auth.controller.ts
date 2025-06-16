@@ -1,7 +1,6 @@
 import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from 'src/users/dto/create-user.dto';
-import { User } from 'src/users/entities/user.entity';
+import { CreateUserDto } from '../users/dto/create-user.dto';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/auth.decorator';
 import { SignInDto } from './dto/auth.signInDto';
@@ -49,6 +48,13 @@ export class AuthController {
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user profile (requires JWT)' })
   getProfile(@Request() req) {
-    return req.user as User;
+    const { sub, username, role, firstName, lastName } = req.user;
+    return {
+      id: sub,
+      username,
+      firstName,
+      lastName,
+      role,
+    };
   }
 }
