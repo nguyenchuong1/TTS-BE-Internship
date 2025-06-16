@@ -6,7 +6,7 @@ import { UsersService } from '../users/users.service';
 import { Role } from '../roles/role.enum';
 import * as bcrypt from 'bcrypt';
 
-jest.mock('bcrypt'); // mock toàn bộ bcrypt
+jest.mock('bcrypt');
 
 describe('AuthService', () => {
   let service: AuthService;

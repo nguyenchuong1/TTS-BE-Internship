@@ -26,7 +26,7 @@ export class TodosController {
 
   @Post()
   @Roles(Role.Admin)
-  @ApiResponse({ status: 200, description: 'List All in todoApp', type: [Todo] })
+  @ApiResponse({ status: 200, description: 'Create', type: [Todo] })
   @ApiBody({ type: CreateTodoDto })
   create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
     return this.todosService.create(createTodoDto);
@@ -37,7 +37,7 @@ export class TodosController {
   @ApiOperation({ summary: 'List all todo' })
   @ApiResponse({ status: 200, description: 'List All in todoApp', type: [CreateTodoDto] })
   async findAll(): Promise<Todo[]> {
-    return await this.todosService.findAll();
+    return this.todosService.findAll();
   }
 
   @Get(':id')
@@ -67,7 +67,6 @@ export class TodosController {
     }
   }
 
-
   @Delete(':id')
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Xóa' })
@@ -77,7 +76,7 @@ export class TodosController {
     if (!todo) {
       throw new NotFoundException('Không tìm thấy trong todoApp');
     } else {
-      return await this.todosService.delete(id);
+      return this.todosService.delete(id);
     }
   }
 }

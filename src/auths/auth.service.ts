@@ -39,7 +39,6 @@ export class AuthService {
         lastName: user.lastName,
         role: user.role,
       };
-      
       return {
         message: 'Sign in successful',
         access_token: await this.jwtService.signAsync(payload),
@@ -51,13 +50,12 @@ export class AuthService {
   }
 
   async signup(createUserDto: CreateUserDto) {
-    // Tách phần kiểm tra user đã tồn tại ra khỏi try
-    const existing = await this.usersService.findOne(createUserDto.username);
-    if (existing) {
-      throw new ConflictException('User already exists');
-    }
-
     try {
+      const existing = await this.usersService.findOne(createUserDto.username);
+      if (existing) {
+        throw new ConflictException('User already exists');
+      }
+
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
 
       const user = await this.usersService.create({
