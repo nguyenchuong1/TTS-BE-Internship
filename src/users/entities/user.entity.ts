@@ -1,6 +1,6 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
-
+import { Role } from '../../roles/role.enum'; // Đảm bảo đúng path import Role enum
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -22,4 +22,8 @@ export class User {
   @Column({ nullable: true })
   @ApiProperty({ example: 'Doe', description: 'Last name of the user' })
   lastName: string;
+
+  @Column({ type: 'enum', enum: Role, default: Role.User }) // Thêm dòng này
+  @ApiProperty({ example: Role.User, description: 'Role of the user' })
+  role: Role;
 }
