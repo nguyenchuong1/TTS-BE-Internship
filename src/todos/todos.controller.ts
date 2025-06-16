@@ -15,7 +15,6 @@ import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Todo } from './entities/todo.entity';
-import { Public } from 'src/auths/decorator/auth.decorator';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { RolesGuard } from '../roles/roles.guard';

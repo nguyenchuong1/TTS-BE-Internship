@@ -107,7 +107,7 @@ describe('AuthService', () => {
         password: 'hashed_password',
       });
       jwtService.sign?.mockReturnValue('signed_token');
-      
+
       const result = await service.signup(dto);
 
       expect(result).toEqual({
