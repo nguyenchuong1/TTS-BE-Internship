@@ -5,6 +5,7 @@ import { AuthModule } from './auths/auth.module';
 import { CatsModule } from './cats/cats.module';
 import { UsersModule } from './users/users.module';
 import { TodosModule } from './todos/todos.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { TodosModule } from './todos/todos.module';
     AuthModule,
     UsersModule,
     TodosModule,
+    TasksModule,
   ],
 })
 export class AppModule {}

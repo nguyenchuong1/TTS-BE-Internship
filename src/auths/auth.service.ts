@@ -55,14 +55,7 @@ export class AuthService {
       if (existing) {
         throw new ConflictException('User already exists');
       }
-
-      const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
-
-      const user = await this.usersService.create({
-        ...createUserDto,
-        password: hashedPassword,
-      });
-
+      const user = await this.usersService.create(createUserDto);
       const payload = { username: user.username, sub: user.id };
       return {
         message: 'Sign up successful',
