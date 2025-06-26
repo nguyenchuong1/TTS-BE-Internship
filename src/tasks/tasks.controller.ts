@@ -17,19 +17,21 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import { AuthGuard } from 'src/auths/auth.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/role.enum';
 import { TaskStatus } from './enums/taskstatus.enum';
 import { Public } from 'src/auths/decorator/auth.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)
+@ApiBearerAuth('access_token')
 @Controller('tasks')
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 
   @Post()
   @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Create a new task' })
   @ApiResponse({ status: 200, description: 'Create', type: [Task] })
   @ApiBody({ type: CreateTaskDto })
   create(@Body() createTaskDto: CreateTaskDto): Promise<Task> {

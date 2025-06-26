@@ -13,7 +13,7 @@ export class CatsService {
   ) {}
 
   getHello(): string {
-    return 'Mấy con mèo chào mọi người !';
+    return 'Mèo méo meo mèo meo!';
   }
 
   async findAll(): Promise<Cat[]> {

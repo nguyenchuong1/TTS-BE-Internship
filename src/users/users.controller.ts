@@ -14,11 +14,12 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auths/auth.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
 import { Role } from 'src/roles/role.enum';
 import { Roles } from '../roles/roles.decorator';
 @UseGuards(AuthGuard, RolesGuard)
+@ApiBearerAuth('access_token')
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -46,7 +47,7 @@ export class UsersController {
 
   @Post()
   @Roles(Role.Admin)
-  @ApiResponse({ status: 200, description: 'Create', type: [User] })
+  @ApiResponse({ status: 200, description: 'Create user' })
   @ApiBody({ type: CreateUserDto })
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
@@ -54,7 +55,7 @@ export class UsersController {
 
   @Patch(':id')
   @Roles(Role.Admin, Role.User)
-  @ApiOperation({ summary: 'Update ' })
+  @ApiOperation({ summary: 'Update user' })
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'User has been updated' })
   async update(@Param('id') id: number, @Body() updateuser: UpdateUserDto): Promise<User | null> {

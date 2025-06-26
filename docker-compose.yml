@@ -1,32 +1,50 @@
-version: '3.9'
-name: nestjs-app
-
 services:
-  postgres:
+  db:
+    container_name: db
     image: postgres:latest
     restart: always
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
       timeout: 5s
-      retries: 0
+      retries: 5
     environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DB=test
-    container_name: nestjs_my_first_api
+      - POSTGRES_USER=${DB_USERNAME}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_DATABASE}
     ports:
-      - 5433:5432
+      - "${DB_PORT}:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - app-net
+
+  app:
+    container_name: app
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      - PORT=${PORT}
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USERNAME=${DB_USERNAME}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_DATABASE=${DB_DATABASE}
+    ports:
+      - "${PORT}:${PORT}"
+    command: npm run start:dev
+    volumes:
+        - .:/usr/src/app
+    networks:
+      - app-net
 
 volumes:
-  postgres_data:
-  
-  
+  pgdata: 
 
-
-    
-
-
-
+networks:
+  app-net:

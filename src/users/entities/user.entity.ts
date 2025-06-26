@@ -26,7 +26,7 @@ export class User {
   lastName: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
-  @ApiProperty({ example: Role.User, description: 'Role of the user' })
+  @ApiProperty({ example: 'user/admin', description: 'Role of the user' })
   role: Role;
 
   @OneToMany(() => Task, (task) => task.assignee)
