@@ -1,3 +1,4 @@
+<<<<<<< week4/dockerize-todo-app
 import { IsEnum, IsOptional, IsString, IsInt } from 'class-validator';
 import { TaskStatus } from '../enums/taskstatus.enum';
 import { Type } from 'class-transformer';
@@ -24,3 +25,8 @@ export class UpdateTaskDto {
   @Type(() => Number)
   assigneeId?: number;
 }
+=======
+import { PartialType } from '@nestjs/swagger';
+import { CreateTaskDto } from './create-task.dto';
+export class UpdateTaskDto extends PartialType(CreateTaskDto) {}
+>>>>>>> develop

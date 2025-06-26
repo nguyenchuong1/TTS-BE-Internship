@@ -14,12 +14,19 @@ import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { AuthGuard } from 'src/auths/auth.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
+<<<<<<< week4/dockerize-todo-app
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+=======
+import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+>>>>>>> develop
 import { User } from './entities/user.entity';
 import { Role } from 'src/roles/role.enum';
 import { Roles } from '../roles/roles.decorator';
 @UseGuards(AuthGuard, RolesGuard)
+<<<<<<< week4/dockerize-todo-app
 @ApiBearerAuth('access_token')
+=======
+>>>>>>> develop
 @Controller('users')
 export class UsersController {
   constructor(private readonly usersService: UsersService) {}
@@ -47,7 +54,11 @@ export class UsersController {
 
   @Post()
   @Roles(Role.Admin)
+<<<<<<< week4/dockerize-todo-app
   @ApiResponse({ status: 200, description: 'Create user' })
+=======
+  @ApiResponse({ status: 200, description: 'Create', type: [User] })
+>>>>>>> develop
   @ApiBody({ type: CreateUserDto })
   create(@Body() createUserDto: CreateUserDto): Promise<User> {
     return this.usersService.create(createUserDto);
@@ -55,7 +66,11 @@ export class UsersController {
 
   @Patch(':id')
   @Roles(Role.Admin, Role.User)
+<<<<<<< week4/dockerize-todo-app
   @ApiOperation({ summary: 'Update user' })
+=======
+  @ApiOperation({ summary: 'Update ' })
+>>>>>>> develop
   @ApiBody({ type: UpdateUserDto })
   @ApiResponse({ status: 200, description: 'User has been updated' })
   async update(@Param('id') id: number, @Body() updateuser: UpdateUserDto): Promise<User | null> {
