@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
-import { TaskStatus } from '../enums/taskstatus.enum';
+import { TaskStatus } from '../../common/enums/taskstatus.enum';
 import { Type } from 'class-transformer';
 import { ApiProperty } from '@nestjs/swagger';
 export class CreateTaskDto {

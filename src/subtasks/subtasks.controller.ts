@@ -14,36 +14,23 @@ import { SubtasksService } from './subtasks.service';
 import { CreateSubtaskDto } from './dto/create-subtask.dto';
 import { UpdateSubtaskDto } from './dto/update-subtask.dto';
 import { Roles } from 'src/roles/roles.decorator';
-<<<<<<< week4/dockerize-todo-app
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiQuery } from '@nestjs/swagger';
-=======
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
->>>>>>> develop
 import { Role } from 'src/roles/role.enum';
 import { SubTask } from './entities/subtask.entity';
 import { AuthGuard } from 'src/auths/auth.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { FindSubtaskDto } from './dto/find-subtasks.dto';
-<<<<<<< week4/dockerize-todo-app
-import { TaskStatus } from '../enums/taskstatus.enum';
+import { TaskStatus } from '../common/enums/taskstatus.enum';
 
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access_token')
-=======
-
-@UseGuards(AuthGuard, RolesGuard)
->>>>>>> develop
 @Controller('subtasks')
 export class SubtasksController {
   constructor(private readonly subtasksService: SubtasksService) {}
   @Post()
   @Roles(Role.Admin)
-<<<<<<< week4/dockerize-todo-app
   @ApiOperation({ summary: 'Create a new sub task' })
-  @ApiResponse({ status: 201, description: 'Created subtask',type: [SubTask] })
-=======
-  @ApiResponse({ status: 201, description: 'Created subtask', type: SubTask })
->>>>>>> develop
+  @ApiResponse({ status: 201, description: 'Created subtask', type: [SubTask] })
   @ApiBody({ type: CreateSubtaskDto })
   async create(@Body() dto: CreateSubtaskDto): Promise<SubTask> {
     const subtask = await this.subtasksService.create(dto);
@@ -65,14 +52,11 @@ export class SubtasksController {
   @Roles(Role.Admin, Role.User)
   @ApiOperation({ summary: 'Search Sub Task' })
   @ApiResponse({ status: 200, description: 'Search Sub Task' })
-<<<<<<< week4/dockerize-todo-app
   @ApiQuery({ name: 'title', required: false })
   @ApiQuery({ name: 'status', enum: TaskStatus, required: false })
   @ApiQuery({ name: 'taskId', required: false, type: Number })
   @ApiQuery({ name: 'assigneeId', required: false, type: Number })
   @ApiQuery({ name: 'search', required: false })
-=======
->>>>>>> develop
   searching(@Query() query: FindSubtaskDto) {
     return this.subtasksService.searching(query);
   }

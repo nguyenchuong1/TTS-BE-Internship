@@ -4,7 +4,7 @@ import { UpdateSubtaskDto } from './dto/update-subtask.dto';
 import { SubTask } from './entities/subtask.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Task } from '../entities/task.entity';
+import { Task } from '../tasks/entities/task.entity';
 import { User } from 'src/users/entities/user.entity';
 import { FindSubtaskDto } from './dto/find-subtasks.dto';
 @Injectable()

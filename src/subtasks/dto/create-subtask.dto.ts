@@ -1,5 +1,5 @@
 import { IsEnum, IsNotEmpty, IsOptional, IsString, IsInt } from 'class-validator';
-import { TaskStatus } from 'src/tasks/enums/taskstatus.enum';
+import { TaskStatus } from 'src/common/enums/taskstatus.enum';
 import { Type } from 'class-transformer';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 export class CreateSubtaskDto {
@@ -9,13 +9,20 @@ export class CreateSubtaskDto {
   @IsOptional()
   title: string;
 
-  @ApiProperty({ example: 'Use JWT for authentication', description: 'Detailed description of the subtask' })
+  @ApiProperty({
+    example: 'Use JWT for authentication',
+    description: 'Detailed description of the subtask',
+  })
   @IsString()
   @IsNotEmpty()
   @IsOptional()
   description: string;
 
-  @ApiPropertyOptional({ enum: TaskStatus, example: TaskStatus.PENDING, description: 'Status of the subtask' })
+  @ApiPropertyOptional({
+    enum: TaskStatus,
+    example: TaskStatus.PENDING,
+    description: 'Status of the subtask',
+  })
   @IsEnum(TaskStatus)
   @IsOptional()
   status: TaskStatus;
