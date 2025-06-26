@@ -20,7 +20,7 @@ import { RolesGuard } from 'src/roles/roles.guard';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Roles } from 'src/roles/roles.decorator';
 import { Role } from 'src/roles/role.enum';
-import { TaskStatus } from '../common/enums/taskstatus.enum';
+import { TaskStatus } from 'src/common/enums/taskstatus.enum';
 import { Public } from 'src/auths/decorator/auth.decorator';
 
 @UseGuards(AuthGuard, RolesGuard)

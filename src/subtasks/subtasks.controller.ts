@@ -20,7 +20,7 @@ import { SubTask } from './entities/subtask.entity';
 import { AuthGuard } from 'src/auths/auth.guard';
 import { RolesGuard } from 'src/roles/roles.guard';
 import { FindSubtaskDto } from './dto/find-subtasks.dto';
-import { TaskStatus } from '../common/enums/taskstatus.enum';
+import { TaskStatus } from 'src/common/enums/taskstatus.enum';
 
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access_token')
