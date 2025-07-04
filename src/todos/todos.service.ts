@@ -1,4 +1,9 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -30,9 +35,26 @@ export class TodosService {
     return await this.todosRepository.findOne({ where: { id } });
   }
 
-  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<Todo | null> {
-    await this.todosRepository.update(id, updateTodoDto);
-    return await this.todosRepository.findOne({ where: { id } });
+  async update(id: number, updateTodoDto: UpdateTodoDto): Promise<Todo> {
+    const todo = await this.todosRepository.findOne({ where: { id } });
+    if (!todo) {
+      throw new NotFoundException(`Todo with ID ${id} not found`);
+    }
+    const { title, description, isCompleted } = updateTodoDto;
+    if (title === undefined && description === undefined && isCompleted === undefined) {
+      throw new BadRequestException('No valid fields provided for update');
+    }
+    if (typeof title === 'string' && title.trim() !== '') {
+      todo.title = title.trim();
+    }
+    if (typeof description === 'string' && description.trim() !== '') {
+      todo.description = description.trim();
+    }
+    if (isCompleted !== undefined) {
+      todo.isCompleted = isCompleted;
+    }
+    todo.updatedAt = new Date();
+    return await this.todosRepository.save(todo);
   }
 
   async delete(id: number): Promise<void> {

@@ -17,7 +17,7 @@ export class AuthService {
   ) {}
 
   getHello(): string {
-    return 'Auth Hello Chuong Nguyen!';
+    return 'Hello everyone!';
   }
 
   async signIn(username: string, pass: string) {

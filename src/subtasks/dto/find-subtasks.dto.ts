@@ -1,4 +1,4 @@
-import { TaskStatus } from 'src/tasks/enums/taskstatus.enum';
+import { TaskStatus } from 'src/common/enums/taskstatus.enum';
 import { IsOptional, IsString, IsEnum, IsNumber } from 'class-validator';
 import { Transform, Type } from 'class-transformer';
 

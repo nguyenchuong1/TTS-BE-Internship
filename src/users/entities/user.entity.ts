@@ -2,7 +2,7 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../../roles/role.enum';
 import { Task } from 'src/tasks/entities/task.entity';
-import { SubTask } from 'src/tasks/subtasks/entities/subtask.entity';
+import { SubTask } from 'src/subtasks/entities/subtask.entity';
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
@@ -26,7 +26,7 @@ export class User {
   lastName: string;
 
   @Column({ type: 'enum', enum: Role, default: Role.User })
-  @ApiProperty({ example: Role.User, description: 'Role of the user' })
+  @ApiProperty({ example: 'user/admin', description: 'Role of the user' })
   role: Role;
 
   @OneToMany(() => Task, (task) => task.assignee)

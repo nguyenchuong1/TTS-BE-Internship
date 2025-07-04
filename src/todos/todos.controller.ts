@@ -13,19 +13,21 @@ import {
 import { TodosService } from './todos.service';
 import { CreateTodoDto } from './dto/create-todo.dto';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-import { ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { Todo } from './entities/todo.entity';
 import { Roles } from '../roles/roles.decorator';
 import { Role } from '../roles/role.enum';
 import { RolesGuard } from '../roles/roles.guard';
 import { AuthGuard } from '../auths/auth.guard';
 @UseGuards(AuthGuard, RolesGuard)
+@ApiBearerAuth('access_token')
 @Controller('todos')
 export class TodosController {
   constructor(private readonly todosService: TodosService) {}
 
   @Post()
   @Roles(Role.Admin)
+  @ApiOperation({ summary: 'Create a todo' })
   @ApiResponse({ status: 200, description: 'Create', type: [Todo] })
   @ApiBody({ type: CreateTodoDto })
   create(@Body() createTodoDto: CreateTodoDto): Promise<Todo> {
@@ -58,13 +60,8 @@ export class TodosController {
   @ApiOperation({ summary: 'Update a todolist by ID' })
   @ApiBody({ type: UpdateTodoDto })
   @ApiResponse({ status: 200, description: 'Todo updated' })
-  async update(@Param('id') id: number, @Body() updatetodo: UpdateTodoDto): Promise<Todo | null> {
-    const todo = await this.todosService.update(id, updatetodo);
-    if (!todo) {
-      throw new NotFoundException(`Todo with id ${id} not found!`);
-    } else {
-      return todo;
-    }
+  async update(@Param('id') id: number, @Body() updatetodo: UpdateTodoDto): Promise<Todo> {
+    return await this.todosService.update(id, updatetodo);
   }
 
   @Delete(':id')
