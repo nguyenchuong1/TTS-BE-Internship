@@ -66,7 +66,6 @@ export class TaskLinksController {
     return this.taskLinksService.update(id, updateTaskLinkDto);
   }
 
-  @Delete(':id')
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Delete task link' })
   @ApiResponse({ status: 200, description: 'Task link deleted!' })

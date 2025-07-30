@@ -39,6 +39,6 @@ export class User {
   @OneToMany(() => TaskHistory, (task_history) => task_history.user_)
   task_history: TaskHistory[];
 
-  @OneToMany(() => TaskComment, (task_momments) => task_momments.user_)
+  @OneToMany(() => TaskComment, (task_comments) => task_comments.user_)
   task_comments: TaskComment[];
 }

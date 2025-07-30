@@ -12,6 +12,7 @@ import { CreateTaskHistoryDto } from '../task-histories/dto/create-task-history.
 import { TaskHistoriesService } from '../task-histories/task-histories.service';
 @Injectable()
 export class TasksService {
+  logger: any;
   constructor(
     @InjectRepository(Task)
     private readonly tasksRepository: Repository<Task>,
@@ -125,7 +126,7 @@ export class TasksService {
       history.old_value = task.priority;
       history.new_value = priority as string;
       task.priority = priority!;
-      console.log('History being saved:', history);
+      this.logger.log('History being saved:', history);
       await this.taskHistoriesService.create(history);
     }
 
@@ -153,6 +154,6 @@ export class TasksService {
     if (due_date) {
       queryBuilder.andWhere('task.due_date =:due_date', { due_date });
     }
-    return await queryBuilder.leftJoinAndSelect('task.user_id', 'user_id').getMany();
+    return await queryBuilder.leftJoinAndSelect('task.user_', 'user_').getMany();
   }
 }

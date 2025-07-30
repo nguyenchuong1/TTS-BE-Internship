@@ -10,7 +10,6 @@ import { FindTaskCommentDto } from './dto/find_task_comment';
 
 @Injectable()
 export class TaskCommentsService {
-  [x: string]: any;
   constructor(
     @InjectRepository(Task)
     private readonly tasksRepository: Repository<Task>,
@@ -87,15 +86,15 @@ export class TaskCommentsService {
 
   async searching(find_task: FindTaskCommentDto) {
     const { task_ } = find_task;
-    const queryBuilder = this.taskcommentsRepository.createQueryBuilder('task-comments');
+    const queryBuilder = this.taskcommentsRepository.createQueryBuilder('taskComments');
 
     if (task_) {
-      queryBuilder.andWhere('task-comments.task_ = :task_', { task_ });
+      queryBuilder.andWhere('taskComments.task_ = :task_', { task_ });
     }
 
     return await queryBuilder
-      .leftJoinAndSelect('task-comments.task_', 'task_')
-      .leftJoinAndSelect('task-comments.user_', 'user_')
+      .leftJoinAndSelect('taskComments.task_', 'task_')
+      .leftJoinAndSelect('taskComments.user_', 'user_')
       .getMany();
   }
 }

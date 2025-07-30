@@ -1,7 +1,7 @@
 import { TaskStatus } from '../../common/enums/taskstatus.enum';
 import { IsDateString, IsEnum, IsOptional, IsString } from 'class-validator';
 // import { Transform, Type } from 'class-transformer';
-import { Priority } from 'src/common/enums/priority.enum';
+import { Priority } from '../../common/enums/priority.enum';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 
 export class FindTaskDto {

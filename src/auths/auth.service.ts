@@ -26,7 +26,7 @@ export class AuthService {
       throw new UnauthorizedException('User not found');
     }
 
-    const checkPass = bcrypt.compareSync(signIn.password, user.password);
+    const checkPass = await bcrypt.compare(signIn.password, user.password);
     if (!checkPass) {
       throw new HttpException('Password is not correct', HttpStatus.UNAUTHORIZED);
     }
@@ -52,7 +52,6 @@ export class AuthService {
     return await this.userRepository.save({
       ...signUpDTO,
       password: hashedPassword,
-      refresh_token: 'refresh_token_string',
     });
   }
   private async generateToken(payload: { id: number; username: string }) {
