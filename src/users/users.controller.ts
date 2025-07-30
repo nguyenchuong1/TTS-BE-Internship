@@ -12,11 +12,11 @@ import {
 import { UsersService } from './users.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { AuthGuard } from 'src/auths/auth.guard';
-import { RolesGuard } from 'src/roles/roles.guard';
+import { AuthGuard } from '../auths/auth.guard';
+import { RolesGuard } from '../roles/roles.guard';
 import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
 import { User } from './entities/user.entity';
-import { Role } from 'src/roles/role.enum';
+import { Role } from '../roles/role.enum';
 import { Roles } from '../roles/roles.decorator';
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access_token')

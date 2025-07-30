@@ -6,28 +6,24 @@ import { CatsModule } from './cats/cats.module';
 import { UsersModule } from './users/users.module';
 import { TodosModule } from './todos/todos.module';
 import { TasksModule } from './tasks/tasks.module';
-import { SubtasksModule } from './subtasks/subtasks.module';
+import { TaskLinksModule } from './task-links/task-links.module';
+import { TaskHistoriesModule } from './task-histories/task-histories.module';
+import { TaskCommentsModule } from './task-comments/task-comments.module';
+import { dataSourceOptions } from 'db/data-source';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
 
-    TypeOrmModule.forRoot({
-      type: 'postgres',
-      host: process.env.DB_HOST,
-      port: Number(process.env?.DB_PORT),
-      username: process.env.DB_USERNAME,
-      password: process.env.DB_PASSWORD,
-      database: process.env.DB_DATABASE,
-      entities: [__dirname + '/**/*.entity{.ts,.js}'],
-      synchronize: true,
-    }),
+    TypeOrmModule.forRoot(dataSourceOptions),
     CatsModule,
     AuthModule,
     UsersModule,
     TodosModule,
     TasksModule,
-    SubtasksModule,
+    TaskLinksModule,
+    TaskHistoriesModule,
+    TaskCommentsModule,
   ],
 })
 export class AppModule {}

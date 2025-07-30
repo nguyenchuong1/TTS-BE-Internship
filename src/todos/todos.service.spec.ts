@@ -2,49 +2,42 @@ import { Test, TestingModule } from '@nestjs/testing';
 import { TodosService } from './todos.service';
 import { getRepositoryToken } from '@nestjs/typeorm';
 import { Todo } from './entities/todo.entity';
-import { CreateTodoDto } from './dto/create-todo.dto';
+import {
+  BadRequestException,
+  InternalServerErrorException,
+  NotFoundException,
+} from '@nestjs/common';
 import { UpdateTodoDto } from './dto/update-todo.dto';
-
-const mockTodo: Todo = {
-  id: 1,
-  title: 'Test Todo',
-  description: 'Testing...',
-  isCompleted: false,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-};
 
 describe('TodosService', () => {
   let service: TodosService;
-  let repo: {
-    create: jest.Mock;
-    save: jest.Mock;
-    find: jest.Mock;
-    findOne: jest.Mock;
-    update: jest.Mock;
-    delete: jest.Mock;
+  const mocktodoService = {
+    create: jest.fn(),
+    save: jest.fn(),
+    find: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
+    delete: jest.fn(),
+  };
+  const todoData = {
+    id: 1,
+    title: 'Test Todo',
+    description: 'Testing...',
+    isCompleted: false,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   };
 
   beforeEach(async () => {
-    repo = {
-      create: jest.fn(() => mockTodo),
-      save: jest.fn(() => Promise.resolve(mockTodo)),
-      find: jest.fn(() => Promise.resolve([mockTodo])),
-      findOne: jest.fn(() => Promise.resolve(mockTodo)),
-      update: jest.fn(() => Promise.resolve(undefined)),
-      delete: jest.fn(() => Promise.resolve(undefined)),
-    };
-
     const module: TestingModule = await Test.createTestingModule({
       providers: [
         TodosService,
         {
           provide: getRepositoryToken(Todo),
-          useValue: repo,
+          useValue: mocktodoService,
         },
       ],
     }).compile();
-
     service = module.get<TodosService>(TodosService);
   });
 
@@ -52,36 +45,88 @@ describe('TodosService', () => {
     expect(service).toBeDefined();
   });
 
-  it('should create a todo', async () => {
-    const dto: CreateTodoDto = { title: 'Test', description: 'Test desc' };
-    const result = await service.create(dto);
-    expect(repo.create).toHaveBeenCalledWith(dto);
-    expect(repo.save).toHaveBeenCalledWith(mockTodo);
-    expect(result).toEqual(mockTodo);
+  describe('create()', () => {
+    it('should create todo list', async () => {
+      mocktodoService.create.mockReturnValue(todoData);
+      mocktodoService.save.mockResolvedValue(todoData);
+
+      const result = await service.create(todoData);
+      expect(mocktodoService.create).toHaveBeenCalled();
+      expect(mocktodoService.save).toHaveBeenCalled();
+      expect(result).toEqual(todoData);
+    });
+    it('Should throw InternalServerErrorException if create todo list fail', async () => {
+      mocktodoService.create.mockResolvedValue(todoData);
+      mocktodoService.create.mockImplementation(() => {
+        throw new Error('Lỗi khi tạo todo list');
+      });
+      await expect(service.create(todoData)).rejects.toThrow(InternalServerErrorException);
+    });
+  });
+  describe('findOne()', () => {
+    it('should find by id', async () => {
+      mocktodoService.findOne.mockResolvedValue(todoData);
+      const result = await service.findOne(todoData.id);
+      expect(result).toEqual(todoData);
+    });
   });
 
-  it('should return all todos', async () => {
-    const result = await service.findAll();
-    expect(repo.find).toHaveBeenCalled();
-    expect(result).toEqual([mockTodo]);
+  describe('findAll()', () => {
+    it('should return all todo list', async () => {
+      mocktodoService.find.mockResolvedValue([todoData]);
+      const result = await service.findAll();
+      expect(result).toEqual([todoData]);
+    });
+  });
+  describe('update()', () => {
+    it('should update and return the updated todo', async () => {
+      const updatedData = {
+        title: 'Updated Title',
+        description: 'Updated Desc',
+        isCompleted: true,
+      };
+
+      const updatedTodo = {
+        ...todoData,
+        ...updatedData,
+        updatedAt: new Date(),
+      };
+
+      mocktodoService.findOne.mockResolvedValue(todoData);
+      mocktodoService.save = jest.fn().mockResolvedValue(updatedTodo);
+
+      const result = await service.update(todoData.id, updatedData);
+      expect(mocktodoService.findOne).toHaveBeenCalledWith({ where: { id: todoData.id } });
+      expect(mocktodoService.save).toHaveBeenCalled();
+      expect(result).toEqual(updatedTodo);
+    });
+
+    it('should throw NotFoundException if todo not found', async () => {
+      mocktodoService.findOne.mockResolvedValue(null);
+      await expect(service.update(999, { title: 'Fail' })).rejects.toThrow(NotFoundException);
+    });
+
+    it('should throw BadRequestException if no valid fields provided', async () => {
+      // giả lập todo tồn tại → để nó đi qua đoạn `if (!todo)`
+      mocktodoService.findOne.mockResolvedValue({ ...todoData });
+
+      const updateDto: Partial<UpdateTodoDto> = {
+        title: '',
+        description: '',
+        isCompleted: undefined,
+      };
+
+      await expect(service.update(todoData.id, updateDto as UpdateTodoDto)).rejects.toThrow(
+        BadRequestException,
+      );
+    });
   });
 
-  it('should return a single todo', async () => {
-    const result = await service.findOne(1);
-    expect(repo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
-    expect(result).toEqual(mockTodo);
-  });
-
-  it('should update a todo', async () => {
-    const dto: UpdateTodoDto = { title: 'Updated Title' };
-    const result = await service.update(1, dto);
-    expect(repo.update).toHaveBeenCalledWith(1, dto);
-    expect(repo.findOne).toHaveBeenCalledWith({ where: { id: 1 } });
-    expect(result).toEqual(mockTodo);
-  });
-
-  it('should delete a todo', async () => {
-    await service.delete(1);
-    expect(repo.delete).toHaveBeenCalledWith(1);
+  describe('delete()', () => {
+    it('should delete the todo list', async () => {
+      mocktodoService.delete.mockResolvedValue(undefined);
+      await service.delete(todoData.id);
+      expect(mocktodoService.delete).toHaveBeenCalledWith(todoData.id);
+    });
   });
 });

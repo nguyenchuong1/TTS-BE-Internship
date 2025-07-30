@@ -1,20 +1,15 @@
-import { Body, Controller, Get, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { CreateUserDto } from '../users/dto/create-user.dto';
+import { Body, Controller, HttpCode, HttpStatus, Post, Request } from '@nestjs/common';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/auth.decorator';
 import { SignInDto } from './dto/auth.signInDto';
+import { SignUpDto } from './dto/auth.signUpDto';
+import { User } from 'src/users/entities/user.entity';
 
 @ApiTags('auths') // Nhóm "Auth" trong Swagger UI
 @Controller('auths')
 export class AuthController {
   constructor(private authService: AuthService) {}
-  @Public()
-  @Get()
-  @ApiOperation({ summary: 'Auth Hello' })
-  getHello(): string {
-    return this.authService.getHello();
-  }
 
   @Public()
   @HttpCode(HttpStatus.OK)
@@ -31,8 +26,10 @@ export class AuthController {
   })
   @ApiResponse({ status: 200, description: 'Login successful' })
   @ApiResponse({ status: 401, description: 'Unauthorized' })
-  signIn(@Body() signInDto: SignInDto) {
-    return this.authService.signIn(signInDto.username, signInDto.password);
+  signIn(@Body() signInDto: SignInDto): Promise<any> {
+    console.log('login api');
+    console.log(signInDto);
+    return this.authService.signIn(signInDto);
   }
 
   @Public()
@@ -40,21 +37,21 @@ export class AuthController {
   @ApiOperation({ summary: 'User signup' })
   @ApiResponse({ status: 201, description: 'User created successfully' })
   @ApiResponse({ status: 409, description: 'User already exists' })
-  async signup(@Body() createUserDto: CreateUserDto) {
-    return this.authService.signup(createUserDto);
+  async register(@Body() signUp: SignUpDto): Promise<User> {
+    console.log('register api');
+    console.log(signUp);
+    const test = await this.authService.Register(signUp);
+    console.log(test);
+    return test;
   }
+
   @Public()
-  @Get('profile')
-  @ApiBearerAuth()
-  @ApiOperation({ summary: 'Get user profile (requires JWT)' })
-  getProfile(@Request() req) {
-    const { sub, username, role, firstName, lastName } = req.user;
-    return {
-      id: sub,
-      username,
-      firstName,
-      lastName,
-      role,
-    };
+  @Post('refresh-token')
+  @ApiOperation({ summary: 'User signup' })
+  @ApiResponse({ status: 201, description: 'Re-Refresh_token created successfully' })
+  @ApiResponse({ status: 401, description: 'Re-Refresh_token already exists' })
+  refreshToken(@Body() { refresh_token }): Promise<any> {
+    console.log('refresh token api');
+    return this.authService.refreshToken(refresh_token);
   }
 }

@@ -43,4 +43,8 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(Role)
   role?: Role;
+
+  @IsOptional()
+  @IsString()
+  refresh_token: string;
 }
