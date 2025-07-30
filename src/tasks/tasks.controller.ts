@@ -9,19 +9,20 @@ import {
   UseGuards,
   NotFoundException,
   Query,
-  ParseIntPipe,
+  // ParseIntPipe,
 } from '@nestjs/common';
 import { TasksService } from './tasks.service';
 import { Task } from './entities/task.entity';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
-import { AuthGuard } from 'src/auths/auth.guard';
-import { RolesGuard } from 'src/roles/roles.guard';
-import { ApiBearerAuth, ApiBody, ApiOperation, ApiResponse } from '@nestjs/swagger';
-import { Roles } from 'src/roles/roles.decorator';
-import { Role } from 'src/roles/role.enum';
-import { TaskStatus } from 'src/common/enums/taskstatus.enum';
-import { Public } from 'src/auths/decorator/auth.decorator';
+import { AuthGuard } from '../auths/auth.guard';
+import { RolesGuard } from '../roles/roles.guard';
+import { ApiBearerAuth, ApiBody, ApiOperation, ApiQuery, ApiResponse } from '@nestjs/swagger';
+import { Roles } from '../roles/roles.decorator';
+import { Role } from '../roles/role.enum';
+import { TaskStatus } from '../common/enums/taskstatus.enum';
+import { FindTaskDto } from './dto/find-task.dto';
+import { Priority } from '../common/enums/priority.enum';
 
 @UseGuards(AuthGuard, RolesGuard)
 @ApiBearerAuth('access_token')
@@ -47,22 +48,24 @@ export class TasksController {
   }
 
   @Get('search')
-  @Public()
-  @ApiOperation({ summary: 'Search tasks by filters' })
-  @ApiResponse({ status: 200, description: 'Filtered task list', type: [Task] })
-  searchTasks(
-    @Query('status') status: TaskStatus,
-    @Query('assigneeId', ParseIntPipe) assigneeId: number,
-    @Query('title') title: string,
-  ): Promise<Task[]> {
-    return this.tasksService.search({ status, assigneeId, title });
+  @Roles(Role.Admin, Role.User)
+  @ApiOperation({ summary: 'Search Task' })
+  @ApiResponse({ status: 200, description: 'Search Task' })
+  @ApiQuery({ name: 'title', required: false })
+  @ApiQuery({ name: 'status', enum: TaskStatus, required: false })
+  @ApiQuery({ name: 'priority', enum: Priority, required: false })
+  @ApiQuery({ name: 'due_date', required: false, type: Number })
+  // @ApiQuery({ name: 'assigneeId', required: false, type: Number })
+  // @ApiQuery({ name: 'search', required: false })
+  searching(@Query() query: FindTaskDto) {
+    return this.tasksService.searching(query);
   }
 
   @Get(':id')
   @Roles(Role.Admin, Role.User)
   @ApiOperation({ summary: 'find task' })
   @ApiResponse({ status: 200, description: 'task found' })
-  async findOne(@Param('id') id: number): Promise<Task> {
+  async findOne(@Param('id') id: string): Promise<Task> {
     const todo = await this.tasksService.findOne(id);
     if (!todo) {
       throw new NotFoundException('Todo not found in the list!');
@@ -77,7 +80,7 @@ export class TasksController {
   @ApiBody({ type: UpdateTaskDto })
   @ApiResponse({ status: 200, description: 'Tasks has been updated' })
   async update(
-    @Param('id') id: number,
+    @Param('id') id: string,
     @Body() updateTaskDto: UpdateTaskDto,
   ): Promise<Task | null> {
     const task = await this.tasksService.update(id, updateTaskDto);
@@ -92,9 +95,9 @@ export class TasksController {
   @Roles(Role.Admin)
   @ApiOperation({ summary: 'Delete task' })
   @ApiResponse({ status: 200, description: 'Task deleted!' })
-  async delete(@Param('id') id: number): Promise<void> {
-    const user = await this.tasksService.findOne(id);
-    if (!user) {
+  async delete(@Param('id') id: string): Promise<void> {
+    const task = await this.tasksService.findOne(id);
+    if (!task) {
       throw new NotFoundException('Not found task in database!');
     } else {
       return this.tasksService.delete(id);

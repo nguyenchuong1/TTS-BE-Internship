@@ -1,7 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Task } from 'src/tasks/entities/task.entity';
-import { User } from 'src/users/entities/user.entity';
-import { TaskStatus } from 'src/common/enums/taskstatus.enum';
+import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import { Task } from '../../tasks/entities/task.entity';
+import { User } from '../../users/entities/user.entity';
+import { TaskStatus } from '../../common/enums/taskstatus.enum';
 import { ApiProperty } from '@nestjs/swagger';
 
 @Entity()
@@ -25,18 +25,18 @@ export class SubTask {
   @ApiProperty({ example: TaskStatus.IN_PROGRESS, enum: TaskStatus })
   status: TaskStatus;
 
-  @ManyToOne(() => Task, (task) => task.subTasks, {
-    onDelete: 'CASCADE',
-    eager: true,
-  })
+  // @ManyToOne(() => Task, (task) => task.subTasks, {
+  //   onDelete: 'CASCADE',
+  //   eager: true,
+  // })
   @ApiProperty({ type: () => Task })
   task: Task;
 
-  @ManyToOne(() => User, (user) => user.subtasks, {
-    eager: true,
-    nullable: true,
-    onDelete: 'SET NULL',
-  })
+  // @ManyToOne(() => User, (user) => user.subtasks, {
+  //   eager: true,
+  //   nullable: true,
+  //   onDelete: 'SET NULL',
+  // })
   @ApiProperty({ type: () => User, nullable: true })
   assignee: User;
 }

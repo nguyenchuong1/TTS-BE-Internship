@@ -22,8 +22,7 @@ export class TodosService {
       const todo = this.todosRepository.create(createTodoDto);
       return await this.todosRepository.save(todo);
     } catch (error) {
-      console.error('Error when create Todolist:', error);
-      throw new InternalServerErrorException('Failed to create Todo');
+      throw new InternalServerErrorException(error.message);
     }
   }
 
@@ -41,7 +40,11 @@ export class TodosService {
       throw new NotFoundException(`Todo with ID ${id} not found`);
     }
     const { title, description, isCompleted } = updateTodoDto;
-    if (title === undefined && description === undefined && isCompleted === undefined) {
+    if (
+      (title === undefined || title.trim() === '') &&
+      (description === undefined || description.trim() === '') &&
+      isCompleted === undefined
+    ) {
       throw new BadRequestException('No valid fields provided for update');
     }
     if (typeof title === 'string' && title.trim() !== '') {

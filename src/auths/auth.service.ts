@@ -1,68 +1,96 @@
 import {
   ConflictException,
+  HttpException,
+  HttpStatus,
   Injectable,
-  InternalServerErrorException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { CreateUserDto } from '../users/dto/create-user.dto';
-import { UsersService } from '../users/users.service';
+import { InjectRepository } from '@nestjs/typeorm';
+import { User } from 'src/users/entities/user.entity';
+import { Repository } from 'typeorm';
+import { SignInDto } from './dto/auth.signInDto';
+import { SignUpDto } from './dto/auth.signUpDto';
 
 @Injectable()
 export class AuthService {
   constructor(
-    private usersService: UsersService,
+    @InjectRepository(User) private userRepository: Repository<User>,
     private jwtService: JwtService,
   ) {}
 
-  getHello(): string {
-    return 'Hello everyone!';
-  }
-
-  async signIn(username: string, pass: string) {
-    try {
-      const user = await this.usersService.findOne(username);
-      if (!user) {
-        throw new UnauthorizedException('User not found');
-      }
-
-      const isMatch = await bcrypt.compare(pass, user.password);
-      if (!isMatch) {
-        throw new UnauthorizedException('Invalid credentials');
-      }
-
-      const payload = {
-        sub: user.id,
-        username: user.username,
-        firstName: user.firstName,
-        lastName: user.lastName,
-        role: user.role,
-      };
-      return {
-        message: 'Sign in successful',
-        access_token: await this.jwtService.signAsync(payload),
-      };
-    } catch (error) {
-      console.error('[SignIn Error]', error);
-      throw new UnauthorizedException('Login failed');
+  async signIn(signIn: SignInDto): Promise<any> {
+    const user = await this.userRepository.findOne({ where: { username: signIn.username } });
+    if (!user) {
+      throw new UnauthorizedException('User not found');
     }
+
+    const checkPass = bcrypt.compareSync(signIn.password, user.password);
+    if (!checkPass) {
+      throw new HttpException('Password is not correct', HttpStatus.UNAUTHORIZED);
+    }
+
+    const payload = {
+      id: user.id,
+      username: user.username,
+      firstName: user.firstName,
+      lastName: user.lastName,
+      role: user.role,
+    };
+    return this.generateToken(payload);
   }
 
-  async signup(createUserDto: CreateUserDto) {
+  async Register(signUpDTO: SignUpDto): Promise<User> {
+    const existing = await this.userRepository.findOne({
+      where: { username: signUpDTO.username },
+    });
+    if (existing) {
+      throw new ConflictException('User already exists');
+    }
+    const hashedPassword = await bcrypt.hash(signUpDTO.password, 10);
+    return await this.userRepository.save({
+      ...signUpDTO,
+      password: hashedPassword,
+      refresh_token: 'refresh_token_string',
+    });
+  }
+  private async generateToken(payload: { id: number; username: string }) {
+    const access_token = await this.jwtService.signAsync(payload);
+    const refresh_token = await this.jwtService.signAsync(payload, {
+      secret: process.env.JWT_REFRESH_SECRET,
+      expiresIn: process.env.EXP_IN_REFRESH_TOKEN,
+    });
+    await this.userRepository.update(
+      { username: payload.username },
+      { refresh_token: refresh_token },
+    );
+    return { access_token, refresh_token };
+  }
+
+  async refreshToken(refresh_token: string): Promise<any> {
     try {
-      const existing = await this.usersService.findOne(createUserDto.username);
-      if (existing) {
-        throw new ConflictException('User already exists');
+      const verify = await this.jwtService.verifyAsync(refresh_token, {
+        secret: process.env.JWT_REFRESH_SECRET,
+      });
+      const checkExistToken = await this.userRepository.findOneBy({
+        username: verify.username,
+        refresh_token,
+      });
+      if (checkExistToken) {
+        const payload = {
+          id: verify.id,
+          username: verify.username,
+          firstName: verify.firstName,
+          lastName: verify.lastName,
+          role: verify.role,
+        };
+        return this.generateToken(payload);
+      } else {
+        throw new HttpException('Refresh token is not valid', HttpStatus.BAD_REQUEST);
       }
-      const user = await this.usersService.create(createUserDto);
-      const payload = { username: user.username, sub: user.id };
-      return {
-        message: 'Sign up successful',
-        access_token: this.jwtService.sign(payload),
-      };
     } catch (error) {
-      throw new InternalServerErrorException(error.message || 'Signup failed');
+      throw new HttpException('Refresh token is not valid', error);
     }
   }
 }

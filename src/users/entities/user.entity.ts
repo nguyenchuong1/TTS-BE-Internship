@@ -1,9 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { Role } from '../../roles/role.enum';
-import { Task } from 'src/tasks/entities/task.entity';
-import { SubTask } from 'src/subtasks/entities/subtask.entity';
-@Entity()
+import { Task } from '../../tasks/entities/task.entity';
+import { TaskHistory } from '../../task-histories/entities/task-history.entity';
+import { TaskComment } from '../../task-comments/entities/task-comment.entity';
+@Entity('users')
 export class User {
   @PrimaryGeneratedColumn()
   @ApiProperty({ example: 1, description: 'The ID of the user' })
@@ -25,13 +26,19 @@ export class User {
   @ApiProperty({ example: 'Doe', description: 'Last name of the user' })
   lastName: string;
 
+  @Column({ nullable: true, default: null })
+  refresh_token: string;
+
   @Column({ type: 'enum', enum: Role, default: Role.User })
   @ApiProperty({ example: 'user/admin', description: 'Role of the user' })
   role: Role;
 
-  @OneToMany(() => Task, (task) => task.assignee)
+  @OneToMany(() => Task, (task) => task.user_)
   tasks: Task[];
 
-  @OneToMany(() => SubTask, (subTask) => subTask.assignee)
-  subtasks: SubTask[];
+  @OneToMany(() => TaskHistory, (task_history) => task_history.user_)
+  task_history: TaskHistory[];
+
+  @OneToMany(() => TaskComment, (task_momments) => task_momments.user_)
+  task_comments: TaskComment[];
 }

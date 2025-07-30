@@ -14,21 +14,17 @@ export class UsersService {
     private readonly usersRepository: Repository<User>,
   ) {}
 
-  getHello(): string {
-    return 'Mấy con mèo chào mọi người !';
-  }
-
   async create(createUserDto: CreateUserDto): Promise<User> {
     try {
       const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
       const user = this.usersRepository.create({
         ...createUserDto,
         password: hashedPassword,
+        refresh_token: 'refresh_token_string',
       });
       return await this.usersRepository.save(user);
     } catch (error) {
-      console.error('Lỗi khi tạo user:', error);
-      throw new InternalServerErrorException('Lỗi tạo user');
+      throw new InternalServerErrorException(error.message);
     }
   }
 
